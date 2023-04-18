@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0 auto;
+}
+
+.extracted-word-count {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid gray;
+  padding-bottom: 0.5rem;
+}
+
+.extracted-word-count > h3 {
+  margin-top: 0;
+}
+
+.extracted-word-count > p {
+  width: 230px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.extracted-word-count > p > span.copy {
+  cursor: pointer;
+}
+
+img {
+  width: 100%;
+}
+
+.reload-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+}
+
+.reload-button:hover {
+  background-color: rgb(227, 227, 227);
+}

@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Contentools",
+    "description": "Chrome extension to help Contentor workflow",
+    "version": "0.0.1",
+    "icons": {
+        "16": "logo/logo-16.png",
+        "48": "logo/logo-48.png",
+        "128": "logo/logo-128.png"
+    },
+    "background": {
+        "service_worker": "action.js"
+      },
+    "action": {
+        "default_title": "Contentools"
+    },
+    "permissions": ["storage","activeTab", "scripting"],
+    "content_scripts": [
+        {
+          "matches": ["https://app.contentor.com/*", "https://contentor-sandbox.eu.wordbee-translator.com/*"],
+          "js": ["content.js"],
+          "run_at": "document_end"
+        }
+    ]
+}
