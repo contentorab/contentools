@@ -16,12 +16,38 @@ body {
 
 .extracted-word-count > h3 {
   margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.gray {
+  color: #757d84;
+}
+
+.blue {
+  color: #2c77ff;
+}
+
+.green {
+  color: #119411;
+}
+
+.orange {
+  color: #d4970f;
+}
+
+.violet {
+  color: #ad28bd;
+}
+
+.red {
+  color: #ff150a;
 }
 
 .extracted-word-count > p {
-  width: 230px;
+  max-width: 400px;
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
 }
 
 .extracted-word-count > p > span.copy {
@@ -36,7 +62,7 @@ img {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 1rem;
+  padding: 0.9rem;
 }
 
 .reload-button:hover {
