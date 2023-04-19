@@ -67,7 +67,7 @@ export function App() {
             <p><span>Total words:</span><span title="copy" class="copy">{total}</span></p>
             <p><span>Total words to translate:</span><span title="copy" class="copy">{toTranslate}</span></p>
             <p><span>Word diff:</span><span title="copy" class="copy">{diff}</span></p>
-            <p class="blue">{paragraphs}</p>
+            <p class="blue"><span title="copy" class="copy">{paragraphs.replace(" only", "")}</span></p>
             <p><span>Supplier:</span><span class="violet">{supplier}</span></p>
           </div>
         ))}
@@ -90,6 +90,7 @@ export function App() {
     }
     else if (request.type === "job-count-words-reference") {
       reference.value = request.payload;
+      document.title = `Contentools - ${request.payload}`;
     }
     else if (request.type === "job-count-words-wrong-page") {
       setTimeout(() => {

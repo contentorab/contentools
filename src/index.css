@@ -52,6 +52,15 @@ body {
 
 .extracted-word-count > p > span.copy {
   cursor: pointer;
+  transition: 100ms;
+}
+
+.extracted-word-count > p > span.copy:hover {
+  font-weight: 600;
+}
+
+.extracted-word-count > p > span.copy:active {
+  font-weight: inherit;
 }
 
 img {
