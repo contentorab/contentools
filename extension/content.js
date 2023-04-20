@@ -47,20 +47,18 @@ async function getWordCountToTranslate() {
         ".RadToolTip.RadToolTip_Telerik .rtWrapper .rtWrapperContent > div > div"
       )
       ?.remove();
-    if (row.querySelector("td:nth-child(7)").innerText == 0) {
+    if (row.querySelector(".col_seg.comments").innerText == 0) {
       continue;
     }
 
-    const paragraphSpans = row.querySelectorAll("td:nth-child(3) > span");
-    const paragraphs =
-      paragraphSpans.length > 2 ? paragraphSpans[1].innerText : "";
+    const paragraphs = row.querySelector(".col_doc > .small")?.innerText ?? ""
 
-    const supplierMatch = row.querySelectorAll("td:nth-child(5) > a");
+    const supplierMatch = row.querySelectorAll(".col_assignment > a");
     const supplier = `${supplierMatch[0].innerText} - ${
       supplierMatch[1].innerText ? "accepted" : ""
     }`;
 
-    row.querySelector("td:nth-child(8) > img:last-child").click();
+    row.querySelector("img[title~=progress]").click();
     let popupLoaded = null;
 
     while (!popupLoaded) {
@@ -70,7 +68,7 @@ async function getWordCountToTranslate() {
       );
     }
 
-    const titleHtml = row.querySelector("td:nth-child(4)").innerHTML;
+    const titleHtml = row.querySelector(".col_tskt").innerHTML;
 
     const totalWordsTd =
       document.querySelector(

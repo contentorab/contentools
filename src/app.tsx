@@ -28,7 +28,7 @@ interface IJobWordCount {
 let isCalculatingJobs = false
 
 export function App() {
-  const tabId = Number(new URLSearchParams(location.search).get('tabId'));
+  let tabId = Number(new URLSearchParams(location.search).get('tabId'));
   const contentResponse = useSignal<IJobWordCount[]>([]);
   const filterJob = useSignal("");
   const error = useSignal("");
@@ -37,7 +37,6 @@ export function App() {
   const searchFilter = (text: string, term: string) => text.toLocaleLowerCase().includes(term.toLocaleLowerCase())
 
   const filteredContent = useComputed(() => contentResponse.value.filter(({job, supplier}) => {
-
     const negativeSearch = filterJob.value.startsWith("-");
     const searchWords = negativeSearch 
       ? filterJob.value.slice(1).trim().split(" ") 
@@ -90,7 +89,13 @@ export function App() {
     }
     else if (request.type === "job-count-words-reference") {
       reference.value = request.payload;
-      document.title = `Contentools - ${request.payload}`;
+      document.title = request.payload;
+    }
+    else if (request.type === "job-count-words-tab-id") {
+      tabId = Number(request.payload);
+      sendMessageToTab({
+        type: "job-count-words-reference"
+      })
     }
     else if (request.type === "job-count-words-wrong-page") {
       setTimeout(() => {
@@ -104,7 +109,7 @@ export function App() {
 
   return (
     <div>
-      <div class="reload-button" onClick={() => {
+      <div title="reload extension" class="reload-button" onClick={() => {
         chrome.runtime.reload();
       }}>
         <img src={ReloadSVG} />
