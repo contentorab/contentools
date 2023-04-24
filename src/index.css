@@ -6,6 +6,7 @@
 
 body {
   margin: 0 auto;
+  min-width: 370px;
 }
 
 .extracted-word-count {
@@ -67,16 +68,26 @@ img {
   width: 100%;
 }
 
-.reload-button {
+.reload-button, .open-button {
   position: absolute;
   top: 0;
-  right: 0;
   padding: 0.9rem;
   transition: 100ms;
-  border-radius: 0 0 0 6px;
   cursor: pointer;
 }
 
-.reload-button:hover {
+.open-button {
+  left: 0;
+  transform: scaleX(-100%);
+  border-radius: 0 0 6px 0;
+  margin: 2px;
+}
+
+.reload-button {
+  right: 0;
+  border-radius: 0 0 0 6px;
+}
+
+.reload-button:hover, .open-button:hover {
   background-color: rgb(227, 227, 227);
 }

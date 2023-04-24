@@ -9,25 +9,11 @@ const storage = {
   },
 };
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  if (request.type === "job-count-words") {
-    getWordCountToTranslate();
-  } else if (request.type === "job-count-words-reference") {
-    const reference = document
-      .querySelector("#_imgNotesInfo")
-      .parentElement.querySelector("span").innerText;
-    chrome.runtime.sendMessage({
-      type: "job-count-words-reference",
-      payload: reference,
-    });
-  }
-});
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function getWordCountToTranslate() {
+async function getWordCountToTranslate(port) {
   const notOnJobTab =
     document.querySelector("a.rtsLink.rtsSelected").innerText !== "5. Jobs";
 
@@ -51,14 +37,14 @@ async function getWordCountToTranslate() {
       continue;
     }
 
-    const paragraphs = row.querySelector(".col_doc > .small")?.innerText ?? ""
+    const paragraphs = row.querySelector(".col_doc > .small")?.innerText ?? "";
 
     const supplierMatch = row.querySelectorAll(".col_assignment > a");
     const supplier = `${supplierMatch[0].innerText} - ${
       supplierMatch[1].innerText ? "accepted" : ""
     }`;
 
-    row.querySelector("img[title~=progress]").click();
+    row.querySelector("img[onclick*='return showDocProgressTooltip']").click();
     let popupLoaded = null;
 
     while (!popupLoaded) {
@@ -102,7 +88,7 @@ async function getWordCountToTranslate() {
     });
   }
 
-  chrome.runtime.sendMessage({
+  port.postMessage({
     type: "job-count-words",
     payload: extracted,
   });
@@ -119,4 +105,85 @@ async function getWordCountToTranslate() {
       type: "job-count-words-wrong-page",
     });
   }
+}
+
+if (location.pathname.includes("/Codyt/Project/ManageItems")) {
+  function connectExtension() {
+    console.log("Connecting to extension");
+    const port = chrome.runtime.connect({
+      name: "jobs",
+    });
+    port.onDisconnect.addListener(function () {
+      setTimeout(connectExtension, 1000);
+    });
+
+    port.onMessage.addListener(async function (request) {
+      console.log("request", request);
+      if (request.type === "job-count-words") {
+        getWordCountToTranslate(port);
+      } else if (request.type === "job-count-words-reference") {
+        const reference = document
+          .querySelector("#_imgNotesInfo")
+          .parentElement.querySelector("span").innerText;
+        port.postMessage({
+          type: "job-count-words-reference",
+          payload: reference,
+        });
+      }
+    });
+  }
+  connectExtension();
+}
+
+if (location.pathname.includes("/Financial/Invoice/Edit")) {
+  const port = chrome.runtime.connect({
+    name: "invoice",
+  });
+  port.onDisconnect.addListener(function () {
+    console.log("onDisconnect");
+  });
+
+  port.onMessage.addListener(function (request) {
+    console.log("request", request);
+    if (request.type === "job-invoice-paste-description") {
+      putCopiedInvoiceDescription(request.payload);
+    } else if (request.type === "job-invoice-paste-quantity") {
+      putCopiedInvoiceNumber(request.payload);
+    }
+  });
+}
+
+function putCopiedInvoiceDescription(description) {
+  if (!location.pathname.includes("/Financial/Invoice/Edit")) return;
+
+  const descInput = document.querySelector('textarea[data-bind="value: desc"]');
+  descInput.value = description;
+
+  const changeEvent = new Event("change");
+  setTimeout(() => descInput.dispatchEvent(changeEvent), 5);
+}
+
+function putCopiedInvoiceNumber(number) {
+  console.log("putCopiedInvoiceNumber", number);
+  if (!location.pathname.includes("/Financial/Invoice/Edit")) return;
+
+  if (
+    document.querySelector("input[data-bind*=enableQuantity]").checked == false
+  ) {
+    document.querySelector("input[data-bind*=enableQuantity]").click();
+  }
+
+  const kInput = document.querySelector(
+    "td[data-bind*=enableQuantity] input.k-formatted-value.k-input"
+  );
+  const updateInput = document.querySelector(
+    "td[data-bind*=enableQuantity] input[data-bind*=updateTotal]"
+  );
+
+  kInput.value = number;
+  updateInput.value = number;
+
+  const changeEvent = new Event("change");
+  setTimeout(() => kInput.dispatchEvent(changeEvent), 5);
+  setTimeout(() => updateInput.dispatchEvent(changeEvent), 5);
 }
