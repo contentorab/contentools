@@ -25,6 +25,7 @@ interface IJobWordCount {
   diff: number;
   paragraphs: string;
   supplier: string;
+  segments: number;
 }
 
 let isCalculatingJobs = false
@@ -125,14 +126,15 @@ export function App() {
       ? filterJob.value.slice(1).trim().split(" ") 
       : filterJob.value.trim().split(" ");
     
-    const matchJob = negativeSearch 
-      ? searchWords.filter(Boolean).some(word => searchFilter(job, word)) 
-      : searchWords.filter(Boolean).every(word => searchFilter(job, word));
     const matchSupplier = searchFilter(supplier, searchWords[0]);
+    const words = searchWords.slice(matchSupplier ? 1 : 0).filter(Boolean)
+    const matchJob = negativeSearch 
+      ? words.some(word => searchFilter(job, word)) 
+      : words.every(word => searchFilter(job, word));
 
     return negativeSearch 
-      ? (searchWords.filter(Boolean).length === 0 || (!matchJob && !matchSupplier)) 
-      : (matchJob || matchSupplier)
+      ? (words.length === 0 || (!matchJob && !matchSupplier)) 
+      : ((matchSupplier && matchJob) || matchJob)
   }))
 
   const ContentList = () => {
@@ -141,6 +143,10 @@ export function App() {
       const span = target.closest('span.copy')
       const value = span?.innerHTML!;
       navigator.clipboard.writeText(value)
+
+      if(span?.classList.contains("only-copy"))  {
+        return;
+      }
 
       if (value) {
         let pasteType = "job-invoice-paste-quantity"
@@ -156,13 +162,14 @@ export function App() {
     }
     return (
       <div onClick={clickHandler}>
-        {filteredContent.value.map(({job, total, toTranslate, diff, paragraphs, supplier}: IJobWordCount) => (
+        {filteredContent.value.map(({job, total, toTranslate, diff, paragraphs, supplier, segments}: IJobWordCount) => (
           <div class="extracted-word-count">
             <h3 dangerouslySetInnerHTML={{ __html: job}}></h3>
             <p><span>Total words:</span><span title="copy" class="copy">{total}</span></p>
             <p><span>Total words to translate:</span><span title="copy" class="copy">{toTranslate}</span></p>
             <p><span>Word diff:</span><span title="copy" class="copy">{diff}</span></p>
             <p class="blue"><span title="copy" class="copy">{paragraphs.replace(" only", "")}</span></p>
+            <p><span>Segments:</span><span title="copy" class="copy only-copy">{segments}</span></p>
             <p><span>Supplier:</span><span class="violet">{supplier}</span></p>
           </div>
         ))}

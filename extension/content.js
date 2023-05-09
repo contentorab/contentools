@@ -33,11 +33,17 @@ async function getWordCountToTranslate(port) {
         ".RadToolTip.RadToolTip_Telerik .rtWrapper .rtWrapperContent > div > div"
       )
       ?.remove();
-    if (row.querySelector(".col_seg.comments").innerText == 0) {
+
+    const segments = parseInt(
+      row.querySelector(".col_seg.comments")?.innerText.replace(/\s/g, "")
+    );
+
+    if (segments == 0) {
       continue;
     }
 
-    const paragraphs = row.querySelector(".col_doc > .small")?.innerText ?? "";
+    const paragraphs =
+      row.querySelector(".col_doc > .small")?.innerText.slice(2) ?? "";
 
     const supplierMatch = row.querySelectorAll(".col_assignment > a");
     const supplier = `${supplierMatch[0].innerText} - ${
@@ -85,6 +91,7 @@ async function getWordCountToTranslate(port) {
       diff: wordDiffCount,
       paragraphs,
       supplier,
+      segments,
     });
   }
 
